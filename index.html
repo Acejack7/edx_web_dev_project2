@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project 3</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('name')) {
+                document.querySelector('#message_to_user').innerHTML = "Please provide the name."
+            } else {
+                name = localStorage.getItem('name');
+                document.querySelector('#form_name').style.display = 'none';
+                document.querySelector('#message_to_user').innerHTML = `Welcome ${name}!`;
+            }
+
+            document.querySelector('#submit_name').onclick = () => {
+                var username = document.querySelector('#username').value;
+                localStorage.setItem('name', username);
+            }
+        });
+        
+        /*
+        // Check if user already used the chat
+        if (!localStorage.getItem('user'))
+            localStorage.setItem('counter', 0);
+
+        // Load current value of  counter
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('#counter').innerHTML = localStorage.getItem('counter');
+
+            // Count every time button is clicked
+            document.querySelector('button').onclick = () => {
+                // Increment current counter
+                let counter = localStorage.getItem('counter');
+                counter++;
+
+                // Update counter
+                document.querySelector('#counter').innerHTML = counter;
+                localStorage.setItem('counter', counter);
+            }
+        });
+        */
+    </script>
+</head>
+<body>
+    <p id="message_to_user"></p>
+    <form id="form_name">
+        <input id="username" autocomplete="off" autofocus placeholder="Name..." type="text">
+        <input id="submit_name" type="submit">
+    </form>
+</body>
+</html>
