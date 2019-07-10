@@ -1,11 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // show all current channels
-    /*var channels = '{{ channels }}';
-    channels.array.forEach(element => {
-        const li = document.createElement('li');
-        li.innerHTML = `New channel: ${element}`;
-        document.querySelector('#channels').append(li);
-    });*/
 
     // connect to websocket
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
