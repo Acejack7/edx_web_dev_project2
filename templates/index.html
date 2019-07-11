@@ -1,34 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Project 2</title>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-    <script src="{{ url_for('static', filename='index.js') }}"></script>
-</head>
-<body>
-    <p id="message_to_user"></p>
-    <form id="form_name">
-        <input id="username" autocomplete="off" autofocus placeholder="Name..." type="text">
-        <input id="submit_name" type="submit">
-    </form>
+{% extends "layout.html" %}
 
-    <div>
+{% block body %}
+    <div class="col-sm-2 main">
+
         <h4>Please provide the name for the channel:</h4>
         <form id="form_channel">
             <input id="channel_name" autocomplete="off" autofocus placeholder="Channel name..." type="text">
             <input id="submit_channel" type="submit">
         </form>
+
+        <ul id="channels">
+            {% for item in channels %}
+                <li><button class="btn btn-primary btn-channel" data-name="{{ item }}">{{ item }}</button></li>
+            {% endfor %}
+        </ul>
+
     </div>
 
-    <ul id="channels">
-        {% for item in channels %}
-            <li>{{ item }}</li>
-        {% endfor %}
-    </ul>
+    <div class="col-sm-8 main">
+        <ul id="messages">
 
-    
-</body>
-</html>
+            {% for item in messages %}
+                <li>{{ item[0] }}: {{ item[1] }}</li>
+                <li>{{ messages }}</li>
+            {% endfor %}
+        
+        </ul>
+        <form id="form_message">
+            <input id="message" autocomplete="off" autofocus placeholder="Message..." type="text">
+            <input id="submit_message" type="submit">
+        </form>
+    </div>
+
+    <div class="col-sm-2 mam main">
+        <p id="message_to_user"></p>
+        <form id="form_name">
+            <input id="username" autocomplete="off" autofocus placeholder="Name..." type="text">
+            <input id="submit_name" type="submit">
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+/* layout.html */
+body {
+    background-color: rgba(237, 234, 220, 0.75);
+}
+
+#welcome {
+    text-align: center;
+}
+
+.main {
+    float: left;
+}
