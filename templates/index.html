@@ -1,42 +1,60 @@
 {% extends "layout.html" %}
 
+{% block javascript %}
+
+    <script>
+        messages = JSON.parse('{{ messages | tojson | safe }}');
+        current_channel = localStorage.getItem('current_channel');
+        messages_to_show = messages[current_channel]
+
+        document.addEventListener('DOMContentLoaded', () => {
+            messages_to_show.forEach(element => {
+                var timestamp = element[0]
+                var user = element[1]
+                var msg = element[2]
+                const li = document.createElement('li');
+                li.innerHTML = `${timestamp} | ${user}: ${msg}`;
+                document.querySelector('#messages').append(li);
+            });
+        });
+    </script>
+
+{% endblock %}
+
 {% block body %}
+
     <div class="col-sm-2 main">
-
-        <h4>Please provide the name for the channel:</h4>
-        <form id="form_channel">
-            <input id="channel_name" autocomplete="off" autofocus placeholder="Channel name..." type="text">
-            <input id="submit_channel" type="submit">
+        <p id="message_to_user"></p>
+        <form id="form_name">
+            <input id="username" autocomplete="off" autofocus placeholder="Name..." type="text">
+            <input id="submit_name" type="submit" value="submit">
         </form>
-
-        <ul id="channels">
-            {% for item in channels %}
-                <li><button class="btn btn-primary btn-channel" data-name="{{ item }}">{{ item }}</button></li>
-            {% endfor %}
-        </ul>
-
     </div>
 
     <div class="col-sm-8 main">
         <ul id="messages">
-
-            {% for item in messages %}
-                <li>{{ item[0] }}: {{ item[1] }}</li>
-                <li>{{ messages }}</li>
-            {% endfor %}
         
         </ul>
         <form id="form_message">
             <input id="message" autocomplete="off" autofocus placeholder="Message..." type="text">
-            <input id="submit_message" type="submit">
+            <input id="submit_message" type="submit" value="send">
         </form>
     </div>
 
-    <div class="col-sm-2 mam main">
-        <p id="message_to_user"></p>
-        <form id="form_name">
-            <input id="username" autocomplete="off" autofocus placeholder="Name..." type="text">
-            <input id="submit_name" type="submit">
+    <div class="col-sm-2 main">
+
+        <h5>Create new channel:</h5>
+        <form id="form_channel">
+            <input id="channel_name" autocomplete="off" autofocus placeholder="Channel name..." type="text">
+            <input id="submit_channel" type="submit" value="Create channel">
+        </form>
+
+        <form id="form_channels">
+            <ul id="channels">
+            {% for item in channels %}
+                <li><button class="btn btn-primary btn-channel" data-name="{{ item }}">{{ item }}</button></li>
+            {% endfor %}
+            </ul>
         </form>
     </div>
 
