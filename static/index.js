@@ -15,23 +15,51 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('name', username);
     };
 
+    // manipulate availability to create a new channel
+    document.querySelector('#submit_channel').disabled = true;
+    document.querySelector('#channel_name').onkeyup = () => {
+        if (document.querySelector('#channel_name').value.length > 0) {
+            document.querySelector('#submit_channel').disabled = false;
+        } else {
+            document.querySelector('#submit_channel').disabled = true;
+        };
+    };
+
     // connect to websocket
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
     socket.on('connect', () => {
-        // user provides channel name
+        // user creates new channel
         document.querySelector('#submit_channel').onclick = () => {
-            const channel_name = document.querySelector('#channel_name').value;
-            socket.emit('new channel', {'channel_name': channel_name});
+            const channel_name = encodeURI(document.querySelector('#channel_name').value);
+            const req = new XMLHttpRequest();
+            req.open('POST', '/check_channels');
+
+            const data = new FormData();
+            data.append('channel_name', channel_name);
+            req.send(data);
+
+            req.onload = () => {
+                const approval = JSON.parse(req.responseText);
+
+                if (approval.channel_possible) {
+                    socket.emit('new channel', {'channel_name': channel_name});
+                } else {
+                    alert('Name of the channel is already taken.');    
+                };
+            };
+            document.querySelector('#channel_name').value = '';
+            document.querySelector('#submit_channel').disabled = true;
+            return false;
         };
 
         // user sends new message
         document.querySelector('#submit_message').onclick = () => {
             const message = document.querySelector('#message').value;
             const message_details = {
-                'message': message,
-                'user': localStorage.getItem('name'),
-                'channel': localStorage.getItem('current_channel')
+                'message': encodeURI(message),
+                'user': encodeURI(localStorage.getItem('name')),
+                'channel': encodeURI(localStorage.getItem('current_channel'))
             };
             socket.emit('new message', message_details);
         };
@@ -41,12 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
             button.onclick = () => {
                 const clicked_channel = button.dataset.name;
                 localStorage.setItem('current_channel', clicked_channel);
+                button.style.color = "red";
                 const username = localStorage.getItem('name');
                 current_channel_details = {
-                    'username': username,
-                    'channel': clicked_channel
+                    'username': encodeURI(username),
+                    'channel': encodeURI(clicked_channel)
                 }
-                socket.emit('save current channel', current_channel_details);
+                // socket.emit('save current channel', current_channel_details);
             };
         });
     });
@@ -72,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         li.innerHTML = `${timestamp} | ${user}: ${message}`;
         document.querySelector('#messages').append(li);
     });
-
+    /*
     // check if current channel exists; if not - pick general
     if (!localStorage.getItem('current_channel')) {
         localStorage.setItem('current_channel', 'general');
@@ -85,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const button_channel = button.dataset.name;
         if (button_channel == current_channel) {
             button.style.color = "red";
-            console.log(button);
         };
-    });
+    });*/
 });
