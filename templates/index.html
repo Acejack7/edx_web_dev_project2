@@ -7,46 +7,81 @@
         current_channel = localStorage.getItem('current_channel');
         messages_to_show = messages[current_channel]
 
+        function display_messages() {
+                if (messages_to_show != undefined) {
+                    messages_to_show.forEach(element => {
+                        const timestamp = element[0]
+                        const user = element[1]
+                        const message = element[2]
+
+                        const li = document.createElement('li');
+                        const span_date = document.createElement('span');
+                        const span_user = document.createElement('span');
+                        const span_message = document.createElement('span');
+
+                        span_date.setAttribute('class', 'msg-date');
+                        span_user.setAttribute('class', 'msg-user');
+                        span_message.setAttribute('class', 'msg-msg');
+
+                        span_date.innerHTML = `|${timestamp}| `;
+                        span_user.innerHTML = `${user}: `;
+                        span_message.innerHTML = `${message}`;
+
+                        li.appendChild(span_date);
+                        li.appendChild(span_user);
+                        li.appendChild(span_message);
+                        li.setAttribute('class', 'message-item');
+        
+                        if (localStorage.getItem('name')) {
+                            if (localStorage.getItem('name') == user) {
+                                const button = document.createElement('button');
+                                const input = document.createElement('input');
+                                input.setAttribute('type', 'image');
+                                input.setAttribute('src', "{{ url_for('static', filename='images/remove.png') }}");
+                                input.setAttribute('class', 'msg-remove');
+                                li.append(input);
+                            }
+                        }
+                        document.querySelector('#messages').append(li);
+                    });
+                };
+            }
+        
         document.addEventListener('DOMContentLoaded', () => {
-            messages_to_show.forEach(element => {
-                var timestamp = element[0]
-                var user = element[1]
-                var msg = element[2]
-                const li = document.createElement('li');
-                li.innerHTML = `${timestamp} | ${user}: ${msg}`;
-                document.querySelector('#messages').append(li);
-            });
+            display_messages();
         });
+
     </script>
 
 {% endblock %}
 
 {% block body %}
 
-    <div class="col-sm-2 main">
+    <div class="col-sm-2 main main-left">
         <p id="message_to_user"></p>
         <form id="form_name">
             <input id="username" autocomplete="off" autofocus placeholder="Name..." type="text">
-            <input id="submit_name" type="submit" value="submit">
+            <input id="submit_name" class="btn btn-primary" type="submit" value="submit">
         </form>
+        <button id="change_name" class="btn btn-primary btn-sm">change name</button>
     </div>
 
-    <div class="col-sm-8 main">
+    <div class="col-sm-8 main main-mid">
         <ul id="messages">
         
         </ul>
         <form id="form_message">
-            <input id="message" autocomplete="off" autofocus placeholder="Message..." type="text">
-            <input id="submit_message" type="submit" value="send">
+            <input id="message" autocomplete="off" autofocus placeholder="Type a message" type="text">
+            <input id="submit_message" class="btn btn-primary btn-sm" type="submit" value="send">
         </form>
     </div>
 
-    <div class="col-sm-2 main">
+    <div class="col-sm-2 main main-right">
 
         <h5>Create new channel:</h5>
         <form id="form_channel">
             <input id="channel_name" autocomplete="off" autofocus placeholder="Channel name..." type="text">
-            <input id="submit_channel" type="submit" value="Create channel">
+            <input id="submit_channel" class="btn btn-primary btn-sm " type="submit" value="Create channel">
         </form>
 
         <form id="form_channels">
@@ -56,6 +91,8 @@
             {% endfor %}
             </ul>
         </form>
+
+        <img src="{{ url_for('static', filename='images/remove.png') }}">
     </div>
 
 {% endblock %}

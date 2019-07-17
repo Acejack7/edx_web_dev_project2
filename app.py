@@ -10,10 +10,10 @@ socketio = SocketIO(app)
 
 channels = ["general", "afk"]
 
-messages = {'general': [("2019-07-12 23:39:07", "test", "hey!"),
-                        ("2019-07-12 23:39:07", "test", "how are you?")],
-            'afk': [("2019-07-12 23:39:07", "joe", "I like cookies!"),
-                    ("2019-07-12 23:39:07", "dummy", "Who cares?")]}
+messages = {'general': [("2019-07-12 23:39", "test", "hey!"),
+                        ("2019-07-12 23:39", "test", "how are you?")],
+            'afk': [("2019-07-12 23:39", "joe", "I like cookies!"),
+                    ("2019-07-12 23:39", "dummy", "Who cares?")]}
 
 last_channels = {}
 
@@ -22,7 +22,7 @@ last_channels = {}
 def index():
     return render_template("index.html", channels=channels, messages=messages)
 
-
+# check if new channel's name is available
 @app.route('/check_channels', methods=["POST"])
 def check_channels():
     channel = urllib.parse.unquote(request.form.get("channel_name"))
@@ -31,14 +31,7 @@ def check_channels():
     else:
         return jsonify({"channel_possible": True})
 
-
-'''@socketio.on("save current channel")
-def save_channel(data):
-    user = urllib.parse.unquote(data["username"])
-    channel = urllib.parse.unquote(data["channel"])
-    last_channels[user] = channel'''
-
-
+# create a new channel, tell all users about that
 @socketio.on("new channel")
 def create_channel(data):
     channel = urllib.parse.unquote(data["channel_name"])
@@ -46,7 +39,7 @@ def create_channel(data):
     messages[channel] = []
     emit("current channels", {"new_channel": channel}, broadcast=True)
 
-
+# add new message, tell all users about that
 @socketio.on("new message")
 def new_message(data):
     user = urllib.parse.unquote(data["user"])
@@ -54,7 +47,7 @@ def new_message(data):
     channel = urllib.parse.unquote(data["channel"])
 
     now = datetime.now()
-    formatted_now = now.strftime("%Y-%m-%d %H:%M:%S")
+    formatted_now = now.strftime("%Y-%m-%d %H:%M")
 
     messages[channel].append((formatted_now, user, message))
     if len(messages) > 100:
@@ -62,6 +55,35 @@ def new_message(data):
     message_details = {"user": user, "message": message,
                        "channel": channel, "timestamp": formatted_now}
     emit("message added", message_details, broadcast=True)
+
+# remove message, tell all users about that
+@socketio.on("message removed")
+def remove_message(data):
+    date = urllib.parse.unquote(data["date"])
+    date_updated = date.strip('|')
+    date_updated = date.strip('| ')
+
+    user = urllib.parse.unquote(data["user"])
+    user_updated = user[:-2]
+
+    msg = urllib.parse.unquote(data["msg"])
+    channel = urllib.parse.unquote(data["channel"])
+
+    all_current_messages = messages[channel]
+
+    for message in all_current_messages:
+        msg_date = message[0]
+        msg_user = message[1]
+        msg_text = message[2]
+        print('tu')
+        if msg_date == date_updated and msg_user == user_updated and msg_text == msg:
+            all_current_messages.remove(message)
+            break
+
+    removed_message = {"date": date, "user": user,
+                       "message": msg, "channel": channel}
+
+    emit("message removed", removed_message, broadcast=True)
 
 
 socketio.run(app, host="0.0.0.0")

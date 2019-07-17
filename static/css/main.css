@@ -1,12 +1,14 @@
 /* layout.html */
-body {
-    background-color: rgba(237, 234, 220, 0.75);
-}
-
 #welcome {
     text-align: center;
 }
 
 .main {
     float: left;
+}
+
+/* index.html */
+.msg-remove {
+    width: 15px;
+    height: 15px;
 }
