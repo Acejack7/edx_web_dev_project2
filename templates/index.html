@@ -34,7 +34,6 @@
         
                         if (localStorage.getItem('name')) {
                             if (localStorage.getItem('name') == user) {
-                                const button = document.createElement('button');
                                 const input = document.createElement('input');
                                 input.setAttribute('type', 'image');
                                 input.setAttribute('src', "{{ url_for('static', filename='images/remove.png') }}");
@@ -92,7 +91,6 @@
             </ul>
         </form>
 
-        <img src="{{ url_for('static', filename='images/remove.png') }}">
     </div>
 
 {% endblock %}

@@ -70,7 +70,7 @@ def remove_message(data):
     channel = urllib.parse.unquote(data["channel"])
 
     all_current_messages = messages[channel]
-
+    print('Py got:', date, user, msg)
     for message in all_current_messages:
         msg_date = message[0]
         msg_user = message[1]
@@ -82,7 +82,7 @@ def remove_message(data):
 
     removed_message = {"date": date, "user": user,
                        "message": msg, "channel": channel}
-
+    print('Py sends:', removed_message)
     emit("message removed", removed_message, broadcast=True)
 
 

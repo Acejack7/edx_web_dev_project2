@@ -32,8 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // user provides the name
     document.querySelector('#submit_name').onclick = () => {
-        const username = document.querySelector('#username').value;
-        localStorage.setItem('name', username);
+        if (document.querySelector('#username').value.length < 1) {
+            alert('Name cannot be empty!');
+        } else {
+            const username = document.querySelector('#username').value;
+            localStorage.setItem('name', username);
+        }
     };
 
     // user wants change a name
@@ -41,6 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('name');
         window.location.reload();
     };
+
+    // manipulate availability to prevent sending empty messages
+    document.querySelector('#submit_message').disabled = true;
+    document.querySelector('#message').onkeyup = () => {
+        if (document.querySelector('#message').value.length > 0) {
+            document.querySelector('#submit_message').disabled = false;
+        } else {
+            document.querySelector('#submit_message').disabled = true;
+        }
+    }
 
     // manipulate availability to create a new channel
     document.querySelector('#submit_channel').disabled = true;
@@ -91,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     'username': encodeURI(username),
                     'channel': encodeURI(clicked_channel)
                 }
-                // socket.emit('save current channel', current_channel_details);
             };
         });
         
@@ -104,6 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 'channel': encodeURI(localStorage.getItem('current_channel'))
             };
             socket.emit('new message', message_details);
+
+            document.querySelector('#message').value = '';
+            document.querySelector('#submit_message').disabled = true;
         };
 
         // user removes a message
@@ -139,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         button.innerHTML = `${channel}`;
         li.appendChild(button);
         document.querySelector('#channels').append(li);
+        document.location.reload(true);
     });
 
     // add new message
@@ -166,6 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
             li.appendChild(span_user);
             li.appendChild(span_message);
             li.setAttribute('class', 'message-item');
+
+            if (localStorage.getItem('name') == user) {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'image');
+                input.setAttribute('src', "/static/images/remove.png");
+                input.setAttribute('class', 'msg-remove');
+                li.appendChild(input);
+            }
 
             document.querySelector('#messages').append(li);
         }
